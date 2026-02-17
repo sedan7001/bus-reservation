@@ -1,0 +1,68 @@
+{
+  "common": {
+    "complete": "완료",
+    "select": "선택",
+    "soldOut": "매진",
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다",
+    "adult": "어른",
+    "child": "어린이",
+    "infant": "유아",
+    "person": "명"
+  },
+  "navigation": {
+    "back": "뒤로",
+    "close": "닫기"
+  },
+  "startPage": {
+    "title": "어디로 떠나볼까요?",
+    "subtitle": "버스표 예매부터 여행 일정까지 한번에",
+    "button": "예매하기"
+  },
+  "searchPage": {
+    "departure": "출발 터미널",
+    "arrival": "도착 터미널",
+    "selectDeparture": "출발 터미널을 선택해주세요",
+    "selectArrival": "도착 터미널을 선택해주세요",
+    "oneWay": "편도",
+    "roundTrip": "왕복",
+    "departureDate": "가는 날",
+    "returnDate": "오는 날",
+    "selectDate": "날짜 선택",
+    "passengers": "승객",
+    "selectPassengers": "승객을 선택해주세요",
+    "viewTickets": "버스 보기"
+  },
+  "stationPage": {
+    "selectDeparture": "출발 터미널을 선택해주세요",
+    "selectArrival": "도착 터미널을 선택해주세요",
+    "placeholder": "터미널명을 입력해주세요",
+    "noResults": "검색 결과가 없어요",
+    "tryOther": "다른 검색어를 입력해보세요",
+    "sameStationError": "출발 터미널과 도착 터미널은 같을 수 없어요"
+  },
+  "ticketPage": {
+    "selectDeparture": "가는편 선택",
+    "selectReturn": "오는편 선택",
+    "noBus": "운행하는 버스가 없어요",
+    "tryOtherDate": "다른 날짜나 구간을 선택해보세요"
+  },
+  "confirmPage": {
+    "title": "예약 확인",
+    "tripInfo": "여행 정보",
+    "route": "구간",
+    "tripType": "여행 방식",
+    "passengers": "인원",
+    "outbound": "가는편",
+    "inbound": "오는편",
+    "selectAgain": "다시 선택",
+    "reserve": "예약하기",
+    "reserveFailed": "예약에 실패했습니다."
+  },
+  "completePage": {
+    "title": "예약 완료",
+    "success": "예약이 완료되었어요",
+    "reservationNumber": "예약번호",
+    "notAvailable": "확인 불가"
+  }
+}
