@@ -20,15 +20,16 @@ export function Button({
   style: buttonStyle = 'solid',
 }: ButtonProps) {
   const baseStyle: CSSProperties = {
-    padding: '12px 20px',
-    borderRadius: 8,
-    fontSize: 15,
+    padding: '14px 20px',
+    borderRadius: 12,
+    fontSize: 16,
     fontWeight: 600,
     border: 'none',
     cursor: disabled ? 'not-allowed' : 'pointer',
-    opacity: disabled ? 0.4 : 1,
+    opacity: disabled ? 0.5 : 1,
     width: fullWidth ? '100%' : undefined,
-    transition: 'background-color 0.2s',
+    transition: 'all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1)',
+    transform: 'scale(1)',
   };
 
   const getColors = (): CSSProperties => {

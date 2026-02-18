@@ -44,11 +44,11 @@
   "ticketPage": {
     "selectDeparture": "가는편 선택",
     "selectReturn": "오는편 선택",
-    "noBus": "운행하는 버스가 없어요",
+    "noBuses": "운행하는 버스가 없어요",
     "tryOtherDate": "다른 날짜나 구간을 선택해보세요"
   },
   "confirmPage": {
-    "title": "예약 확인",
+    "title": "좌석 선택",
     "tripInfo": "여행 정보",
     "route": "구간",
     "tripType": "여행 방식",
@@ -57,12 +57,16 @@
     "inbound": "오는편",
     "selectAgain": "다시 선택",
     "reserve": "예약하기",
-    "reserveFailed": "예약에 실패했습니다."
+    "reserveFailed": "예약에 실패했습니다.",
+    "seatSelection": "좌석 선택",
+    "seatSelectionInbound": "좌석 선택 (오는편)",
+    "seatNotSelected": "좌석을 선택해주세요"
   },
   "completePage": {
     "title": "예약 완료",
     "success": "예약이 완료되었어요",
     "reservationNumber": "예약번호",
-    "notAvailable": "확인 불가"
+    "notAvailable": "확인 불가",
+    "seats": "좌석"
   }
 }

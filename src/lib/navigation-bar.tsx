@@ -12,20 +12,22 @@ export function NavigationBar({ title, left }: NavigationBarProps) {
       style={{
         display: 'flex',
         alignItems: 'center',
-        height: 56,
-        padding: '0 16px',
-        borderBottom: '1px solid #E5E8EB',
+        height: 52,
+        padding: '0 12px',
+        borderBottom: '1px solid #F2F4F6',
         position: 'relative',
+        backgroundColor: colors.white,
+        zIndex: 10,
       }}
     >
-      {left && <div style={{ position: 'absolute', left: 16, display: 'flex' }}>{left}</div>}
+      {left && <div style={{ position: 'absolute', left: 12, display: 'flex', padding: 8, cursor: 'pointer' }}>{left}</div>}
       {title && (
         <span
           style={{
             flex: 1,
             textAlign: 'center',
-            fontSize: 17,
-            fontWeight: 600,
+            fontSize: 18,
+            fontWeight: 700,
             color: colors.grey900,
           }}
         >

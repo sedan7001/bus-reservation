@@ -44,26 +44,32 @@ export function BottomSheet({ open, header, onClose, children }: BottomSheetProp
         style={{
           position: 'relative',
           width: '100%',
-          maxHeight: '90vh',
+          maxHeight: '85vh',
           backgroundColor: '#fff',
-          borderRadius: '16px 16px 0 0',
-          overflow: 'auto',
-          animation: 'slideUp 0.3s ease-out',
+          borderRadius: '24px 24px 0 0',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: '0 -4px 16px rgba(0,0,0,0.08)',
+          animation: 'slideUp 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)',
         }}
       >
         {header && (
           <div
             style={{
-              padding: '20px 24px 12px',
-              fontSize: 18,
+              padding: '24px 24px 16px',
+              fontSize: 20,
               fontWeight: 700,
-              borderBottom: '1px solid #E5E8EB',
+              color: '#191F28',
+              flexShrink: 0,
             }}
           >
             {header}
           </div>
         )}
-        {children}
+        <div style={{ overflow: 'auto', flex: 1 }}>
+          {children}
+        </div>
       </div>
       <style>{`
         @keyframes slideUp {
