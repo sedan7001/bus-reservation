@@ -9,21 +9,35 @@ import {
   NavigationBar,
   Spacing,
   Text,
+  Toast,
   colors,
+  AppError,
 } from '../lib';
 import { createReservation } from '../api/reservations';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useState, useCallback } from 'react';
 import { useReservationStore } from '../store/reservation-store';
 import { useTicketFormatter } from '../hooks/use-ticket-formatter';
+import { SeatSelector, BusTypeBadge } from '../ui';
 
 export function ConfirmPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const [toastState, setToastState] = useState<{ isOpen: boolean; message: string }>({ isOpen: false, message: '' });
 
-  const { outboundTicket, inboundTicket } = useReservationStore();
+  const closeToast = useCallback(() => setToastState({ isOpen: false, message: '' }), []);
+
+  const {
+    outboundTicket,
+    inboundTicket,
+    outboundSeats,
+    inboundSeats,
+    setOutboundSeats,
+    setInboundSeats,
+  } = useReservationStore();
   const { formatTime, formatDate } = useTicketFormatter();
 
   const departureName = searchParams.get('departure');
@@ -33,17 +47,19 @@ export function ConfirmPage() {
   const adult = Number(searchParams.get('adult')) || 0;
   const child = Number(searchParams.get('child')) || 0;
   const infant = Number(searchParams.get('infant')) || 0;
+  const totalPassengers = adult + child + infant;
 
-  const totalPassengers =
+  const totalPassengersText =
     `어른 ${adult}명` + (child ? `, 어린이 ${child}명` : '') + (infant ? `, 유아 ${infant}명` : '');
 
-  const { mutateAsync: reserve } = useMutation({
+  const { mutateAsync: reserve, isPending } = useMutation({
     mutationFn: createReservation,
     onSuccess: data => {
       navigate('/complete', { state: { reservationId: data.reservationId } });
     },
-    onError: () => {
-      alert(t('confirmPage.reserveFailed'));
+    onError: (error) => {
+      const message = AppError.isAppError(error) ? error.userMessage : t('confirmPage.reserveFailed');
+      setToastState({ isOpen: true, message });
     },
   });
 
@@ -64,12 +80,15 @@ export function ConfirmPage() {
         outboundTicketId: outboundTicket.id,
         inboundTicketId: inboundTicket.id,
         count,
+        outboundSeats,
+        inboundSeats,
       });
     } else {
       await reserve({
         type: 'ONE_WAY',
         ticketId: outboundTicket.id,
         count,
+        seats: outboundSeats,
       });
     }
   };
@@ -94,6 +113,11 @@ export function ConfirmPage() {
       </Flex>
     );
   }
+
+  const isSeatsValid =
+    tripType === 'ROUND'
+      ? outboundSeats.length === totalPassengers && inboundSeats.length === totalPassengers
+      : outboundSeats.length === totalPassengers;
 
   return (
     <>
@@ -140,7 +164,7 @@ export function ConfirmPage() {
             type="2RowTypeA"
             top={t('confirmPage.passengers')}
             topProps={{ fontSize: 14, color: colors.grey600 }}
-            bottom={totalPassengers}
+            bottom={totalPassengersText}
             bottomProps={{ fontSize: 16, color: colors.grey900 }}
           />
         }
@@ -156,12 +180,10 @@ export function ConfirmPage() {
         contents={
           <div>
             <Flex justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
-              <Text fontSize={16} fontWeight="bold" color={colors.grey900}>
+              <Text fontSize={14} color={colors.grey600}>
                 {formatDate(outboundTicket.departureTime)}
               </Text>
-              <Text fontSize={14} color={colors.grey600}>
-                {outboundTicket.busNumber}
-              </Text>
+              <BusTypeBadge busNumber={outboundTicket.busNumber} />
             </Flex>
             <Flex alignItems="center" gap={8}>
               <Text fontSize={18} fontWeight="bold" color={colors.grey900}>
@@ -188,12 +210,10 @@ export function ConfirmPage() {
             contents={
               <div>
                 <Flex justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
-                  <Text fontSize={16} fontWeight="bold" color={colors.grey900}>
+                  <Text fontSize={14} color={colors.grey600}>
                     {formatDate(inboundTicket.departureTime)}
                   </Text>
-                  <Text fontSize={14} color={colors.grey600}>
-                    {inboundTicket.busNumber}
-                  </Text>
+                  <BusTypeBadge busNumber={inboundTicket.busNumber} />
                 </Flex>
                 <Flex alignItems="center" gap={8}>
                   <Text fontSize={18} fontWeight="bold" color={colors.grey900}>
@@ -212,18 +232,77 @@ export function ConfirmPage() {
         </>
       )}
 
+      <Border height={16} />
+      <ListHeader
+        title={
+          <Flex direction="column">
+            <ListHeader.TitleParagraph fontWeight="bold">{t('confirmPage.seatSelection')}</ListHeader.TitleParagraph>
+            <Spacing size={4} />
+            <Text fontSize={14} color={colors.grey600}>
+              {outboundSeats.length > 0
+                ? `${t('confirmPage.outbound')}: ${outboundSeats.join(', ')}번`
+                : t('confirmPage.seatNotSelected')}
+            </Text>
+          </Flex>
+        }
+      />
+      <SeatSelector
+        busNumber={outboundTicket.busNumber}
+        selectedSeats={outboundSeats}
+        onSeatChange={setOutboundSeats}
+        maxSeats={totalPassengers}
+      />
+
+      {inboundTicket && (
+        <>
+          <Spacing size={24} />
+          <ListHeader
+            title={
+              <Flex direction="column">
+                <ListHeader.TitleParagraph fontWeight="bold">
+                  {t('confirmPage.seatSelectionInbound')}
+                </ListHeader.TitleParagraph>
+                <Spacing size={4} />
+                <Text fontSize={14} color={colors.grey600}>
+                  {inboundSeats.length > 0
+                    ? `${t('confirmPage.inbound')}: ${inboundSeats.join(', ')}번`
+                    : t('confirmPage.seatNotSelected')}
+                </Text>
+              </Flex>
+            }
+          />
+          <SeatSelector
+            busNumber={inboundTicket.busNumber}
+            selectedSeats={inboundSeats}
+            onSeatChange={setInboundSeats}
+            maxSeats={totalPassengers}
+          />
+        </>
+      )}
+
+      <Spacing size={100} />
+
       <FixedBottomCTA.Double
         fullWidth={true}
+        mode="spread"
         leftButton={
           <Button theme="dark" style="weak" onClick={handleSelectAgain}>
             {t('confirmPage.selectAgain')}
           </Button>
         }
         rightButton={
-          <Button theme="primary" onClick={handleReserve}>
-            {t('confirmPage.reserve')}
+          <Button theme="primary" onClick={handleReserve} disabled={!isSeatsValid || isPending}>
+            {isPending ? '예약 중...' : t('confirmPage.reserve')}
           </Button>
         }
+      />
+
+      <Toast
+        message={toastState.message}
+        isOpen={toastState.isOpen}
+        close={closeToast}
+        type="warn"
+        position="bottom"
       />
     </>
   );
