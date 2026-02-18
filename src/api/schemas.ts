@@ -1,10 +1,8 @@
 import { z } from 'zod';
 
-// ── 공통 열거형 ──
 export const TripTypeEnum = z.enum(['ONE_WAY', 'ROUND']);
 export const TicketStatusEnum = z.enum(['ON_SALE', 'SOLD_OUT']);
 
-// ── Station ──
 export const StationSchema = z.object({
   id: z.union([z.string(), z.number()]).transform(String),
   name: z.string(),
@@ -12,7 +10,6 @@ export const StationSchema = z.object({
 
 export type Station = z.infer<typeof StationSchema>;
 
-// ── Ticket ──
 export const TicketSchema = z.object({
   id: z.number(),
   departureStationId: z.union([z.string(), z.number()]),
@@ -25,7 +22,8 @@ export const TicketSchema = z.object({
 
 export type Ticket = z.infer<typeof TicketSchema>;
 
-// ── Passenger Count ──
+export const SeatsSchema = z.array(z.number().int().positive());
+
 export const PassengerCountSchema = z.object({
   adults: z.number().int().min(0),
   children: z.number().int().min(0),
@@ -34,18 +32,20 @@ export const PassengerCountSchema = z.object({
 
 export type PassengerCount = z.infer<typeof PassengerCountSchema>;
 
-// ── CreateReservation ──
 export const CreateReservationBodySchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('ONE_WAY'),
     ticketId: z.number(),
     count: PassengerCountSchema,
+    seats: SeatsSchema,
   }),
   z.object({
     type: z.literal('ROUND'),
     outboundTicketId: z.number(),
     inboundTicketId: z.number(),
     count: PassengerCountSchema,
+    outboundSeats: SeatsSchema,
+    inboundSeats: SeatsSchema,
   }),
 ]);
 
@@ -57,11 +57,11 @@ export const CreateReservationResponseSchema = z.object({
 
 export type CreateReservationResponse = z.infer<typeof CreateReservationResponseSchema>;
 
-// ── Reservation (응답) ──
 const OneWayReservationSchema = z.object({
   type: z.literal('ONE_WAY'),
   id: z.number(),
   ticket: TicketSchema,
+  seats: SeatsSchema,
 });
 
 const RoundReservationSchema = z.object({
@@ -69,6 +69,8 @@ const RoundReservationSchema = z.object({
   id: z.number(),
   outboundTicket: TicketSchema,
   inboundTicket: TicketSchema,
+  outboundSeats: SeatsSchema,
+  inboundSeats: SeatsSchema,
 });
 
 export const ReservationSchema = z.discriminatedUnion('type', [

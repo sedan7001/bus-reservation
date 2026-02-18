@@ -7,6 +7,7 @@ import { Assets, colors, ListRow, NavigationBar, Spacing, Text, TextField, Toast
 import { searchStations } from '../api/stations';
 import { queryKeys, queryOptions } from '../api/query-keys';
 import { EmptyState } from '../ui';
+import { useDebounce } from '../hooks/use-debounce';
 
 export function StationPage() {
   const navigate = useNavigate();
@@ -14,15 +15,16 @@ export function StationPage() {
   const { t } = useTranslation();
   const type = searchParams.get('type') as 'departure' | 'arrival';
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedQuery = useDebounce(searchQuery, 300);
 
   const { data: stations, isPending } = useQuery({
-    queryKey: queryKeys.stations.search(searchQuery),
-    queryFn: () => searchStations(searchQuery),
+    queryKey: queryKeys.stations.search(debouncedQuery),
+    queryFn: () => searchStations(debouncedQuery),
     placeholderData: keepPreviousData,
     ...queryOptions.stations,
   });
 
-  const filteredStations = stations?.filter(station => station.name.includes(searchQuery));
+  const filteredStations = stations?.filter(station => station.name.includes(debouncedQuery));
 
   const handleStationClick = (stationName: string) => {
     const currentDeparture = searchParams.get('departure');
@@ -84,10 +86,12 @@ export function StationPage() {
           placeholder={t('stationPage.placeholder')}
           value={searchQuery}
           onChange={handleSearchChange}
+          aria-label={t('stationPage.placeholder')}
         />
         {searchQuery.length > 0 && (
           <button
             onClick={() => setSearchQuery('')}
+            aria-label="검색어 지우기"
             style={{
               position: 'absolute',
               right: 36,
@@ -115,17 +119,20 @@ export function StationPage() {
           <Text color={colors.grey500}>{t('common.loading')}</Text>
         </Flex>
       ) : filteredStations && filteredStations.length > 0 ? (
-        filteredStations.map(station => (
-          <ListRow
-            key={station.name}
-            contents={
-              <Text fontSize={16} color={colors.grey900}>
-                {station.name}
-              </Text>
-            }
-            onClick={() => handleStationClick(station.name)}
-          />
-        ))
+        <ul role="listbox" aria-label="터미널 목록" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+          {filteredStations.map(station => (
+            <li key={station.name} role="option" aria-selected={false}>
+              <ListRow
+                contents={
+                  <Text fontSize={16} color={colors.grey900}>
+                    {station.name}
+                  </Text>
+                }
+                onClick={() => handleStationClick(station.name)}
+              />
+            </li>
+          ))}
+        </ul>
       ) : (
         <EmptyState messageKey="stationPage.noResults" subMessageKey="stationPage.tryOther" />
       )}

@@ -7,13 +7,22 @@ import { getReservation, type Reservation, type Ticket } from '../api/reservatio
 import { queryKeys } from '../api/query-keys';
 import { useTicketFormatter } from '../hooks/use-ticket-formatter';
 
-function getTicketsFromReservation(reservation: Reservation | undefined): Ticket[] {
+interface TicketWithSeats {
+  ticket: Ticket;
+  seats: number[];
+  label: string;
+}
+
+function getTicketsFromReservation(reservation: Reservation | undefined): TicketWithSeats[] {
   if (!reservation) {
     return [];
   }
   return match(reservation)
-    .with({ type: 'ONE_WAY' }, (r) => [r.ticket])
-    .with({ type: 'ROUND' }, (r) => [r.outboundTicket, r.inboundTicket])
+    .with({ type: 'ONE_WAY' }, (r) => [{ ticket: r.ticket, seats: r.seats, label: '' }])
+    .with({ type: 'ROUND' }, (r) => [
+      { ticket: r.outboundTicket, seats: r.outboundSeats, label: '가는편' },
+      { ticket: r.inboundTicket, seats: r.inboundSeats, label: '오는편' },
+    ])
     .exhaustive();
 }
 
@@ -56,31 +65,44 @@ export function CompletePage() {
       {tickets.length > 0 && (
         <>
           <Border height={16} />
-          {tickets.map((ticket, index) => (
-            <div key={ticket.id}>
+          {tickets.map((item, index) => (
+            <div key={item.ticket.id}>
               {index > 0 && <Border height={1} />}
               <ListRow
                 contents={
                   <div>
+                    {item.label && (
+                      <Text fontSize={13} fontWeight="bold" color={colors.blue500} style={{ marginBottom: 4, display: 'block' }}>
+                        {item.label}
+                      </Text>
+                    )}
                     <Flex justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
                       <Text fontSize={16} fontWeight="bold" color={colors.grey900}>
-                        {formatDate(ticket.departureTime)}
+                        {formatDate(item.ticket.departureTime)}
                       </Text>
                       <Text fontSize={14} color={colors.grey600}>
-                        {ticket.busNumber}
+                        {item.ticket.busNumber}
                       </Text>
                     </Flex>
                     <Flex alignItems="center" gap={8}>
                       <Text fontSize={18} fontWeight="bold" color={colors.grey900}>
-                        {formatTime(ticket.departureTime)}
+                        {formatTime(item.ticket.departureTime)}
                       </Text>
                       <Text fontSize={14} color={colors.grey500}>
                         →
                       </Text>
                       <Text fontSize={18} fontWeight="bold" color={colors.grey900}>
-                        {formatTime(ticket.arrivalTime)}
+                        {formatTime(item.ticket.arrivalTime)}
                       </Text>
                     </Flex>
+                    {item.seats.length > 0 && (
+                      <>
+                        <Spacing size={8} />
+                        <Text fontSize={14} color={colors.grey700}>
+                          {t('completePage.seats')}: {item.seats.join(', ')}번
+                        </Text>
+                      </>
+                    )}
                   </div>
                 }
               />

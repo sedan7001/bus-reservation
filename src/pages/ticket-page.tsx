@@ -8,6 +8,7 @@ import { ko } from 'date-fns/locale';
 import { getStations } from '../api/stations';
 import { Ticket } from '../api/tickets';
 import { queryKeys, queryOptions } from '../api/query-keys';
+import { BusTypeBadge } from '../ui';
 import { useReservationStore } from '../store/reservation-store';
 import { useTicketFormatter } from '../hooks/use-ticket-formatter';
 
@@ -119,7 +120,7 @@ export function TicketPage() {
           <Assets.Icon name="icon-search" color={colors.grey400} shape={{ width: 48, height: 48 }} />
           <Spacing size={16} />
           <Text color={colors.grey600} fontSize={16}>
-            {t('ticketPage.noBus')}
+            {t('ticketPage.noBuses')}
           </Text>
           <Spacing size={8} />
           <Text color={colors.grey500} fontSize={14}>
@@ -147,14 +148,12 @@ export function TicketPage() {
                     {formatTime(ticket.arrivalTime)}
                   </Text>
                 </Flex>
-                <Flex alignItems="center">
+                <Flex alignItems="center" gap={6}>
                   <Text fontSize={13} color={colors.grey600}>
                     {getDuration(ticket.departureTime, ticket.arrivalTime)}
                   </Text>
-                  <span style={{ margin: '0 4px', color: colors.grey300, fontSize: 13 }}>·</span>
-                  <Text fontSize={13} color={colors.grey600}>
-                    {ticket.busNumber}
-                  </Text>
+                  <span style={{ margin: '0 2px', color: colors.grey300, fontSize: 13 }}>·</span>
+                  <BusTypeBadge busNumber={ticket.busNumber} />
                 </Flex>
               </Flex>
             }

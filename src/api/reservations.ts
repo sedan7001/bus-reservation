@@ -14,7 +14,10 @@ export type { Ticket, CreateReservationBody, CreateReservationResponse, Reservat
 
 export async function createReservation(body: CreateReservationBody): Promise<CreateReservationResponse> {
   const validatedBody = CreateReservationBodySchema.parse(body);
-  return http.post(API_URLS.RESERVATIONS, validatedBody, CreateReservationResponseSchema);
+  const idempotencyKey = crypto.randomUUID();
+  return http.post(API_URLS.RESERVATIONS, validatedBody, CreateReservationResponseSchema, {
+    'Idempotency-Key': idempotencyKey,
+  });
 }
 
 export function getReservation(reservationId: number | string): Promise<Reservation> {
