@@ -7383,24 +7383,46 @@ function createTicket(params) {
     arrivalStationId: arrivalStation.id
   };
 }
-function calculateDuration(busType, distance) {
+const TRAVEL_TIMES = {
+  '1-2': 50,   '1-3': 140,  '1-4': 270,  '1-5': 210,  '1-6': 60,
+  '1-7': 220,  '1-8': 260,  '1-9': 280,  '1-10': 180,
+  '2-3': 110,  '2-4': 250,  '2-5': 200,  '2-6': 70,
+  '2-7': 200,  '2-8': 240,  '2-9': 260,  '2-10': 160,
+  '3-4': 180,  '3-5': 120,  '3-6': 170,
+  '3-7': 120,  '3-8': 160,  '3-9': 170,  '3-10': 70,
+  '4-5': 270,  '4-6': 310,
+  '4-7': 60,   '4-8': 50,   '4-9': 40,   '4-10': 220,
+  '5-6': 270,  '5-7': 210,  '5-8': 260,  '5-9': 250,  '5-10': 90,
+  '6-7': 250,  '6-8': 290,  '6-9': 310,  '6-10': 210,
+  '7-8': 60,   '7-9': 50,   '7-10': 150,
+  '8-9': 40,   '8-10': 200,
+  '9-10': 210,
+};
+function getBaseTravelTime(stationA, stationB) {
+  const key1 = `${stationA}-${stationB}`;
+  const key2 = `${stationB}-${stationA}`;
+  return TRAVEL_TIMES[key1] || TRAVEL_TIMES[key2] || 180;
+}
+function calculateDuration(busType, distance, departureStationId, arrivalStationId) {
+  const baseTime = getBaseTravelTime(departureStationId, arrivalStationId);
   switch (busType) {
     case "프리미엄":
-      return 60 + distance * 8;
+      return Math.round(baseTime * 0.9);
     case "우등":
-      return 90 + distance * 12;
+      return baseTime;
     case "일반":
-      return 120 + distance * 15;
+      return Math.round(baseTime * 1.1);
     default:
-      return 90 + distance * 12;
+      return baseTime;
   }
 }
 function generateDailySchedule(departureStationId, arrivalStationId) {
   const distance = Math.abs(departureStationId - arrivalStationId);
   return FIXED_SCHEDULES.map((schedule, index) => {
-    const durationMinutes = calculateDuration(schedule.busType, distance);
+    const durationMinutes = calculateDuration(schedule.busType, distance, departureStationId, arrivalStationId);
+    const seed = (departureStationId * 1000 + arrivalStationId * 100 + index * 37 + schedule.hour * 13) % 9000 + 1000;
     return {
-      busNumber: `${schedule.busType}-${departureStationId}${arrivalStationId}${index + 1}`,
+      busNumber: `${schedule.busType}-${seed}`,
       departureHour: schedule.hour,
       departureMinute: schedule.minute,
       durationMinutes,

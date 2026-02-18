@@ -1,4 +1,6 @@
 export { http } from './http';
+export { AppError } from './app-error';
+export type { ErrorCode } from './app-error';
 export { colors } from './colors';
 export { Flex } from './flex';
 export { Spacing } from './spacing';
