@@ -143,7 +143,7 @@ export function SearchPage() {
 
   return (
     <>
-      <NavigationBar title="버스 예매" />
+      <NavigationBar title="버스 예약" />
 
       <Spacing size={16} />
 

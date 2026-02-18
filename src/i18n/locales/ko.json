@@ -16,8 +16,8 @@
   },
   "startPage": {
     "title": "어디로 떠나볼까요?",
-    "subtitle": "버스표 예매부터 여행 일정까지 한번에",
-    "button": "예매하기"
+    "subtitle": "버스표 예약부터 여행 일정까지 한번에",
+    "button": "예약하기"
   },
   "searchPage": {
     "departure": "출발 터미널",

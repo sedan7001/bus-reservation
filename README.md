@@ -22,6 +22,12 @@ yarn dev
 | `yarn build`     | 프로덕션 빌드를 생성해요.                |
 | `yarn lint`      | ESLint를 활용하여 코드컨벤션을 확인해요. |
 | `yarn typecheck` | TypeScript 타입 검사를 실행해요.         |
+| `yarn test:e2e`  | Playwright E2E 테스트를 실행해요.        |
+
+### E2E 테스트 상세
+
+- **기본 실행**: `yarn test:e2e` 혹은 `npx playwright test`
+- **UI 모드로 실행**: `npx playwright test --ui` (테스트 과정을 시각적으로 확인하며 디버깅할 수 있습니다.)
 
 ## 기술 스택 🛠️
 

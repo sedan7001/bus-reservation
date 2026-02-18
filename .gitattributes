@@ -1,0 +1,3 @@
+# 깃허브 언어 통계에서 특정 파일 제외 설정
+# server.mjs 파일을 통계에서 제외하여 TypeScript를 주 언어로 유지합니다.
+server.mjs linguist-vendored

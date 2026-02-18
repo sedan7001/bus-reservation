@@ -9,7 +9,7 @@ export function StartPage() {
           navigate('/search', { state: { reset: true } });
         }}
       >
-        예매 시작하기
+        예약 시작하기
       </button>
   );
 }
